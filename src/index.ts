@@ -1,5 +1,4 @@
 import { DurableObject } from "cloudflare:workers";
-import { v7 as uuidv7 } from 'uuid';
 
 export class WebSocketServer extends DurableObject<Env> {
   roomId: string | null = null;
