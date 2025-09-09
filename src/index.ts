@@ -47,16 +47,25 @@ export class WebSocketServer extends DurableObject<Env> {
 }
 
 
-const generateRoomId = () => {
-  // return first part of a v7 UUID
-  return uuidv7().split('-')[0];
+const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+const generateRoomCode = (length = 6): string => {
+  let code = '';
+  for (let i = 0; i < length; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
 }
 
-
 const handleRoomCreation = async (request: Request, env: Env): Promise<Response> => {
-  const roomId = generateRoomId();
-  const id = env.WEBSOCKET_SERVER.idFromName(roomId);
-  const stub = env.WEBSOCKET_SERVER.get(id);
+  let roomId: string;
+  let id, stub;
+
+  do {
+    roomId = generateRoomCode();
+    id = env.WEBSOCKET_SERVER.idFromName(roomId);
+    stub = env.WEBSOCKET_SERVER.get(id);
+  } while (false);
+
   await stub.fetch(request);
   await stub.initialize(roomId);
 
