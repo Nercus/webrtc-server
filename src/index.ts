@@ -72,11 +72,14 @@ const handleRoomCreation = async (request: Request, env: Env): Promise<Response>
   return new Response(JSON.stringify({ roomId }), { status: 201, headers: { 'Content-Type': 'application/json' } });
 }
 
-const handleRoomJoin = async (request: Request): Promise<Response> => {
+const handleRoomJoin = async (request: Request, env:Env): Promise<Response> => {
   const { roomId } = await request.json() as { roomId: string };
   if (!roomId) {
     return new Response('Missing roomId', { status: 400 });
   }
+  // Optionally check if room exists by trying to get the stub
+  const id = env.WEBSOCKET_SERVER.idFromName(roomId);
+  const stub = env.WEBSOCKET_SERVER.get(id);
   // Could add more logic here to verify room existence
   console.log(`Client joining room ${roomId}`);
   return new Response(JSON.stringify({ roomId }), { status: 200, headers: { 'Content-Type': 'application/json' } });
@@ -126,7 +129,7 @@ export default {
     if (url.pathname === '/create-room' && request.method === 'POST') {
       return withCORS(await handleRoomCreation(request, env));
     } else if (url.pathname === '/join-room' && request.method === 'POST') {
-      return withCORS(await handleRoomJoin(request));
+      return withCORS(await handleRoomJoin(request, env));
     } else if (url.pathname === '/ws' && request.method === 'GET') {
       // WebSocket upgrades do not need CORS
       return handleWebSocket(request, env);
