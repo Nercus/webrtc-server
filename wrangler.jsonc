@@ -35,6 +35,10 @@
     {
       "pattern": "webrtc.wintersperger.dev",
       "custom_domain": true
+    },
+    {
+      "pattern": "webrtc.nerc.dev",
+      "custom_domain": true
     }
   ]
 }
